@@ -2,86 +2,176 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Survivor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Neon Survivor: Shapewalker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="startMenu" class="neon-panel">
-        <h1 class="neon-text-blue">NEON SURVIVOR</h1>
+    <!-- Main Menu Epic -->
+    <div id="startMenu" class="fullscreen-menu">
 
-        <input type="text" id="playerName" class="neon-input" placeholder="ENTER CALL SIGN" maxlength="12">
-
-        <p>Choose your Faction:</p>
-        <div class="buttons">
-            <button class="neon-btn triangle faction-btn" data-shape="triangle">Triangle<br><small>Offense</small></button>
-            <button class="neon-btn circle faction-btn" data-shape="circle">Circle<br><small>Mobility</small></button>
-            <button class="neon-btn square faction-btn" data-shape="square">Square<br><small>Defense</small></button>
+        <div class="lang-selector">
+            <select id="langSelect" class="neon-select">
+                <option value="en">English</option>
+                <option value="pt">Português (Brasil)</option>
+                <option value="es">Español</option>
+            </select>
         </div>
 
-        <button id="playBtn" class="neon-btn play-btn" disabled>INITIALIZE</button>
+        <div class="title-container">
+            <h1 class="epic-title">NEON<br><span class="subtitle">SURVIVOR</span></h1>
+        </div>
 
-        <div class="audio-controls">
-            <label>BGM Volume: <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="0.5"></label>
-            <label>SFX Volume: <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="0.5"></label>
+        <div class="glass-panel menu-content">
+            <input type="text" id="playerName" class="neon-input epic-input" data-i18n="menu_placeholder" placeholder="ENTER CALL SIGN" maxlength="12">
+
+            <p class="neon-text-blue" style="letter-spacing: 2px; margin-bottom: 5px; font-size: 12px;" data-i18n="menu_select_protocol">SELECT PROTOCOL:</p>
+            <div class="buttons faction-group">
+                <button class="neon-btn pill-btn triangle faction-btn" data-shape="triangle" data-i18n="fac_tri_btn">Triangle<br><small>Offense</small></button>
+                <button class="neon-btn pill-btn circle faction-btn" data-shape="circle" data-i18n="fac_cir_btn">Circle<br><small>Mobility</small></button>
+                <button class="neon-btn pill-btn square faction-btn" data-shape="square" data-i18n="fac_squ_btn">Square<br><small>Defense</small></button>
+            </div>
+
+            <button id="playBtn" class="neon-btn play-btn epic-play" disabled data-i18n="menu_play">ENTER THE GRID</button>
+
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <button id="openLoreBtn" class="neon-btn small-btn pill-btn" style="flex: 1;" data-i18n="menu_lore">DATA ARCHIVES</button>
+                <button id="openSupportBtn" class="neon-btn small-btn pill-btn" style="flex: 1; border-color: #f0f; color: #f0f;" data-i18n="menu_support">SUPPORT THE GRID</button>
+            </div>
+
+            <div class="audio-controls">
+                <label>BGM <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="0.5"></label>
+                <label>SFX <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="0.5"></label>
+            </div>
+        </div>
+
+        <div class="menu-footer">
+            PROJECT ARCHITECT: <strong>Carlos A. B. Oliveira [MecStrike]</strong><br>
+            <span class="company-text">PARALLAX GAMES &copy; ALL RIGHTS RESERVED</span>
         </div>
     </div>
 
-    <div id="factionTooltip" class="tooltip" style="display: none;"></div>
+    <!-- Lore Menu -->
+    <div id="loreMenu" class="glass-panel center-panel" style="display: none; height: 85vh; max-height: 800px;">
+        <h1 class="epic-title" style="font-size: 2.5rem; letter-spacing: 8px; margin-bottom: 10px;" data-i18n="lore_title">ARCHIVES</h1>
+        <div class="lore-content custom-scrollbar">
+            <h2 class="neon-text-blue" data-i18n="lore_p1_title">PROLOGUE</h2>
+            <p data-i18n="lore_p1_text">Long before the war...</p>
+            <h2 class="neon-text-pink" data-i18n="lore_p2_title">THE RUPTURE</h2>
+            <p data-i18n="lore_p2_text">Without warning...</p>
+            <h2 class="neon-text-blue" data-i18n="lore_p3_title">THE CORRUPTION</h2>
+            <p data-i18n="lore_p3_text">But the war was just a symptom...</p>
+            <h2 class="neon-text-pink" data-i18n="lore_p4_title">THE SHAPEWALKER</h2>
+            <p data-i18n="lore_p4_text">You are a Shapewalker...</p>
+            <h2 class="neon-text-blue" data-i18n="lore_p5_title">OBJECTIVE</h2>
+            <p data-i18n="lore_p5_text">Survive. Evolve. Discover...</p>
+            <h3 style="color: #ffaa00; text-align: center; margin-top: 30px; font-style: italic;" data-i18n="lore_quote">"The war between shapes has begun..."</h3>
+        </div>
+        <button id="closeLoreBtn" class="neon-btn play-btn epic-play pill-btn" style="margin-top: 15px;" data-i18n="lore_return">RETURN</button>
+    </div>
 
+    <!-- Support Menu (NOVO) -->
+    <div id="supportMenu" class="glass-panel center-panel" style="display: none;">
+        <h1 class="epic-title" style="font-size: 2.5rem; letter-spacing: 5px; margin-bottom: 10px; color: #f0f; text-shadow: 0 0 15px #f0f;" data-i18n="supp_title">SUPPORT THE GRID</h1>
+        <div class="lore-content custom-scrollbar" style="text-align: center;">
+            <p data-i18n="supp_thanks" style="font-size: 16px; color: #fff; margin-bottom: 25px;">Thank you for playing Neon Survivor! Your survival helps keep the Grid alive.</p>
+
+            <h3 class="neon-text-blue" data-i18n="supp_features_title">UPCOMING PROTOCOLS [ROADMAP]:</h3>
+            <ul style="list-style: none; padding: 0; color: #0ff; line-height: 2;">
+                <li data-i18n="supp_f1">• Save System</li>
+                <li data-i18n="supp_f2">• Global Player Rankings</li>
+                <li data-i18n="supp_f3">• New Grid Maps & Biomes</li>
+            </ul>
+
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,0,255,0.3);">
+                <p class="neon-text-pink" style="margin-bottom: 5px;" data-i18n="supp_contact">Report anomalies and bugs to:</p>
+                <a href="mailto:procbrito@gmail.com" style="color: #fff; text-decoration: none; font-size: 18px; letter-spacing: 2px; text-shadow: 0 0 10px #fff;">procbrito@gmail.com</a>
+            </div>
+        </div>
+        <button id="closeSupportBtn" class="neon-btn play-btn epic-play pill-btn" style="margin-top: 15px;" data-i18n="lore_return">RETURN</button>
+    </div>
+
+    <div id="factionTooltip" class="tooltip glass-panel" style="display: none;"></div>
+
+    <!-- Aviso de Boss -->
     <div id="warningMessage" style="display: none;">
-        <h1 class="flash-text">WARNING: MASSIVE ANOMALY DETECTED</h1>
+        <h1 class="flash-text" data-i18n="boss_warning">WARNING: MASSIVE ANOMALY DETECTED</h1>
     </div>
 
-    <div id="levelUpMenu" class="neon-panel" style="display: none; width: 450px;">
-        <h1 class="neon-text-pink" style="margin-bottom: 5px;">SYSTEM UPGRADE</h1>
-        <p style="margin-top: 0; color: #aaa; font-size: 14px;">Select a new protocol:</p>
+    <!-- Level Up Menu -->
+    <div id="levelUpMenu" class="glass-panel center-panel" style="display: none;">
+        <h1 class="neon-text-pink" style="margin-bottom: 5px;" data-i18n="lvl_title">SYSTEM UPGRADE</h1>
+        <p style="margin-top: 0; color: #0ff; font-size: 14px;" data-i18n="lvl_subtitle">SELECT A NEW PROTOCOL:</p>
         <div id="upgradeChoices" class="upgrade-container"></div>
     </div>
 
-    <div id="topRightControls" style="display: none;">
-        <button id="pauseBtn" class="neon-btn small-btn" style="pointer-events: none;">[SPACE] PAUSE &nbsp;|&nbsp; [ESC] QUIT</button>
-    </div>
-
+    <!-- Barra de HP do Boss -->
     <div id="bossHpContainer" style="display: none;">
-        <div class="neon-text-pink" style="font-size: 14px; letter-spacing: 2px;">ANOMALY INTEGRITY</div>
-        <div class="bar-container boss-bar"><div id="bossHpBar" class="bar-fill hp-fill" style="width: 100%; background: #ff0055; box-shadow: 0 0 10px #ff0055;"></div></div>
+        <div class="neon-text-pink boss-hp-label" data-i18n="boss_hp">ANOMALY INTEGRITY</div>
+        <div class="sleek-boss-bar"><div id="bossHpBar" class="sleek-boss-fill"></div></div>
     </div>
 
-    <div id="hud" style="display: none;">
-        <div class="hud-block">
-            <h2 class="neon-text-blue" id="displayNick">Pilot</h2>
-            <div class="bar-container"><div id="xpBar" class="bar-fill xp-fill" style="width: 0%;"></div></div>
-        </div>
-
-        <div class="hud-block score-block">
-            <h3 class="neon-text-pink" style="margin-bottom: 2px;">TIME: <span id="gameTimer">00:00</span></h3>
-            <h3 class="neon-text-pink" style="margin-top: 2px; font-size: 16px;">SCORE: <span id="score">0</span></h3>
-        </div>
-
-        <div class="hud-block">
-            <div style="display: flex; gap: 10px; font-size: 12px; justify-content: center; font-weight: bold;">
-                <span style="color: #0ff;">SHIELD</span>
-                <span style="color: #0f0;">ENERGY</span>
+    <!-- HUD Central Unificada -->
+    <div id="hud" class="glass-hud" style="display: none;">
+        <div class="hud-top-row">
+            <div class="hud-stats glass-subpanel">
+                <span class="neon-text-pink">LVL: <span id="playerLevel" class="text-white">1</span></span>
+                <span class="stat-divider">|</span>
+                <span class="neon-text-blue" id="statDmg">DMG: 100%</span>
+                <span class="stat-divider">|</span>
+                <span class="neon-text-blue" id="statSpd">ATK SPD: 100%</span>
+                <span class="stat-divider">|</span>
+                <span class="neon-text-blue" id="statCrit">CRIT: 0%</span>
+                <span class="stat-divider">|</span>
+                <span class="neon-text-blue" id="statArm">ARMOR: 0</span>
             </div>
-            <div style="display: flex; gap: 5px;">
-                <div class="bar-container" style="width: 120px;"><div id="shieldBar" class="bar-fill shield-fill" style="width: 100%;"></div></div>
-                <div class="bar-container" style="width: 120px;"><div id="hpBar" class="bar-fill hp-fill" style="width: 100%;"></div></div>
+
+            <div class="hud-controls">
+                <button id="pauseBtn" class="neon-btn small-btn pill-btn">[SPACE] PAUSE</button>
+                <button id="quitBtn" class="neon-btn small-btn pill-btn" style="border-color: #f05;">[ESC] QUIT</button>
+            </div>
+        </div>
+
+        <div class="hud-bottom-row">
+            <div class="hud-main-info glass-subpanel">
+                <span class="neon-text-blue" id="displayNick">Pilot</span>
+                <span class="neon-text-pink" style="margin-left:15px;" data-i18n="hud_time">TIME:</span> <span id="gameTimer" class="text-white">00:00</span>
+                <span class="neon-text-pink" style="margin-left:15px;" data-i18n="hud_score">SCORE:</span> <span id="score" class="text-white">0</span>
+            </div>
+
+            <div class="hud-bars">
+                <div class="bar-wrapper">
+                    <span class="bar-label" style="color: #ffaa00;">XP</span>
+                    <div class="bar-container pill-bar"><div id="xpBar" class="bar-fill xp-fill" style="width: 0%;"></div></div>
+                </div>
+                <div class="bar-wrapper">
+                    <span class="bar-label" style="color: #0ff;" data-i18n="hud_shield">SHIELD</span>
+                    <div class="bar-container pill-bar"><div id="shieldBar" class="bar-fill shield-fill" style="width: 100%;"></div></div>
+                </div>
+                <div class="bar-wrapper">
+                    <span class="bar-label" style="color: #0f0;" data-i18n="hud_energy">ENERGY</span>
+                    <div class="bar-container pill-bar"><div id="hpBar" class="bar-fill hp-fill" style="width: 100%;"></div></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="gameOverMenu" class="neon-panel" style="display: none;">
-        <h1 class="neon-text-pink">SIGNAL LOST</h1>
-        <h2 class="neon-text-blue">Final Score: <span id="finalScore">0</span></h2>
-        <h3 class="neon-text-blue" style="margin-top:0;">Time Alive: <span id="finalTime">00:00</span></h3>
-        <button id="retryBtn" class="neon-btn play-btn">REBOOT SYSTEM</button>
-        <button id="quitBtn" class="neon-btn small-btn" style="margin-top: 10px; border-color: #555;">MAIN MENU</button>
+    <!-- Game Over -->
+    <div id="gameOverMenu" class="glass-panel center-panel" style="display: none;">
+        <h1 class="flash-text" data-i18n="go_title">SIGNAL LOST</h1>
+        <h2 class="neon-text-blue"><span data-i18n="go_score">FINAL SCORE:</span> <span id="finalScore" style="color:#fff;">0</span></h2>
+        <h3 class="neon-text-pink" style="margin-top:0;"><span data-i18n="go_time">TIME ALIVE:</span> <span id="finalTime" style="color:#fff;">00:00</span></h3>
+        <button id="retryBtn" class="neon-btn play-btn epic-play pill-btn" data-i18n="go_retry">REBOOT SYSTEM</button>
     </div>
 
     <canvas id="gameCanvas" width="1280" height="720"></canvas>
 
+    <script>
+        document.addEventListener('touchmove', function (e) {
+            if (e.target.id === 'gameCanvas') e.preventDefault();
+        }, { passive: false });
+    </script>
     <script type="module" src="js/game.js"></script>
 </body>
 </html>

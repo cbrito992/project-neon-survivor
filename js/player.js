@@ -6,7 +6,7 @@ export class Player {
     constructor(shape) {
         this.shape = shape;
         this.faction = FACTIONS[shape];
-        this.color = this.faction.color;
+        this.baseColor = this.faction.color;
 
         this.x = 0;
         this.y = 0;
@@ -16,6 +16,9 @@ export class Player {
         this.vy = 0;
         this.accel = 1.2;
         this.friction = 0.85;
+
+        this.level = 1;
+        this.colorPhase = 0; // Evolução da cor após os bosses
 
         this.stats = {
             damageMult: 1.0,
@@ -51,7 +54,27 @@ export class Player {
         this.momentum = 0;
     }
 
-    // NOVO: Recalcula os atributos sem explodir a vida atual do player
+    // Retorna a cor atual baseada nas fases do Boss vencidas
+    getCurrentColor() {
+        if (this.colorPhase === 0) return this.baseColor;
+        if (this.colorPhase === 1) {
+            // Pulsa entre a cor base e branco
+            const mix = (Math.sin(Date.now() / 200) + 1) / 2;
+            return mix > 0.5 ? this.baseColor : '#ffffff';
+        }
+        if (this.colorPhase === 2) {
+            // Pulsa cores quentes/frias intensas
+            const mix = (Math.sin(Date.now() / 150) + 1) / 2;
+            return mix > 0.5 ? this.baseColor : '#ff00ff';
+        }
+        // Phase 3+ Arco-íris RGB contínuo (Level MAX Color)
+        return `hsl(${(Date.now() / 10) % 360}, 100%, 50%)`;
+    }
+
+    evolveColor() {
+        if (this.colorPhase < 3) this.colorPhase++;
+    }
+
     recalculateStats() {
         const oldHpMax = this.hpMax;
         const oldShieldMax = this.shieldMax;
@@ -59,7 +82,6 @@ export class Player {
         this.hpMax = 100 * this.stats.maxHpMult;
         this.shieldMax = 100 * this.stats.maxHpMult;
 
-        // Mantém a proporção da vida que ele tinha
         this.hp = (this.hp / oldHpMax) * this.hpMax;
         this.shield = (this.shield / oldShieldMax) * this.shieldMax;
     }
@@ -95,7 +117,6 @@ export class Player {
 
         if (this.scale > 1) this.scale -= 0.05;
 
-        // Guarda o status do escudo no rastro
         this.trail.unshift({
             x: this.x, y: this.y, rot: this.rotation,
             hasShield: this.shield > 0, shieldRatio: this.shield / this.shieldMax
@@ -121,7 +142,9 @@ export class Player {
     }
 
     draw(ctx) {
-        // Rastro Dinâmico (Segue o escudo se existir, senão segue o núcleo)
+        let activeColor = this.getCurrentColor();
+
+        // Rastro Dinâmico
         this.trail.forEach((t, index) => {
             let alpha = 1 - (index / this.trail.length);
             ctx.save();
@@ -131,11 +154,10 @@ export class Player {
 
             if (t.hasShield) {
                 const dynamicScale = this.shieldScaleBase * (0.7 + t.shieldRatio * 0.3);
-                drawNeonShape(ctx, 0, 0, this.size * dynamicScale, this.shape, this.color, true);
+                drawNeonShape(ctx, 0, 0, this.size * dynamicScale, this.shape, activeColor, true);
             } else {
-                drawNeonShape(ctx, 0, 0, this.size * (0.6 + alpha * 0.4), this.shape, this.color);
+                drawNeonShape(ctx, 0, 0, this.size * (0.6 + alpha * 0.4), this.shape, activeColor);
             }
-
             ctx.restore();
         });
 
@@ -146,7 +168,7 @@ export class Player {
             ctx.rotate(this.rotation);
             ctx.globalAlpha = 0.2 + (this.shield / this.shieldMax) * 0.5;
             const dynamicScale = this.shieldScaleBase * (0.7 + (this.shield / this.shieldMax) * 0.3);
-            drawNeonShape(ctx, 0, 0, this.size * dynamicScale, this.shape, this.color, true);
+            drawNeonShape(ctx, 0, 0, this.size * dynamicScale, this.shape, activeColor, true);
             ctx.restore();
         }
 

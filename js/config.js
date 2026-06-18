@@ -32,22 +32,24 @@ export const FACTIONS = {
     }
 };
 
+// Powerups agora usam chaves i18n
 export const POWER_UPS = [
-    { id: 'quantum_core', name: 'Quantum Core', desc: '+10% Damage', rarity: 'common', effect: (p) => p.stats.damageMult += 0.10 },
-    { id: 'digital_thrusters', name: 'Digital Thrusters', desc: '+15% Move Speed', rarity: 'common', effect: (p) => p.stats.speedMult += 0.15 },
-    { id: 'energy_matrix', name: 'Energy Matrix', desc: '+20% Max Shield', rarity: 'common', effect: (p) => { p.shieldMax *= 1.2; p.shield = p.shieldMax; } },
-    { id: 'targeting_ai', name: 'Targeting AI', desc: '+10% Crit Chance', rarity: 'rare', effect: (p) => p.stats.critChance += 0.10 },
-    { id: 'overclock_chip', name: 'Overclock Chip', desc: '+20% Attack Speed', rarity: 'rare', effect: (p) => p.stats.cooldownRed += 0.20 },
-    { id: 'nano_repair', name: 'Nano Repair', desc: '+2 Shield Regen/sec', rarity: 'rare', effect: (p) => p.stats.regen += 2 },
-    { id: 'plasma_amplifier', name: 'Plasma Amplifier', desc: '+25% Projectile Size', rarity: 'rare', effect: (p) => p.stats.projSize += 0.25 },
-    { id: 'multi_launcher', name: 'Multi Launcher', desc: '+1 Projectile', rarity: 'epic', effect: (p) => p.stats.projCount += 1 },
-    { id: 'gravity_field', name: 'Gravity Field', desc: '+50% Magnet Radius', rarity: 'epic', effect: (p) => p.stats.magnet += 0.50 },
-    { id: 'tachyon_processor', name: 'Tachyon Processor', desc: '+15% Cooldown Reduction', rarity: 'epic', effect: (p) => p.stats.cooldownRed += 0.15 },
-    { id: 'stellar_forge', name: 'Stellar Forge', desc: '+30% Dmg, +50% Crit Dmg', rarity: 'legendary', effect: (p) => { p.stats.damageMult += 0.30; p.stats.critDmg += 0.50; } },
-    { id: 'omega_protocol', name: 'Omega Protocol', desc: '+2 Projectiles, +25% Atk Speed', rarity: 'legendary', effect: (p) => { p.stats.projCount += 2; p.stats.cooldownRed += 0.25; } }
+    { id: 'quantum_core', nameKey: 'pu_quantum_n', descKey: 'pu_quantum_d', rarity: 'common', effect: (p) => p.stats.damageMult += 0.10 },
+    { id: 'digital_thrusters', nameKey: 'pu_thrust_n', descKey: 'pu_thrust_d', rarity: 'common', effect: (p) => p.stats.speedMult += 0.15 },
+    { id: 'energy_matrix', nameKey: 'pu_matrix_n', descKey: 'pu_matrix_d', rarity: 'common', effect: (p) => { p.shieldMax *= 1.2; p.shield = p.shieldMax; } },
+    { id: 'targeting_ai', nameKey: 'pu_target_n', descKey: 'pu_target_d', rarity: 'rare', effect: (p) => p.stats.critChance += 0.10 },
+    { id: 'overclock_chip', nameKey: 'pu_overclock_n', descKey: 'pu_overclock_d', rarity: 'rare', effect: (p) => p.stats.cooldownRed += 0.20 },
+    { id: 'nano_repair', nameKey: 'pu_nano_n', descKey: 'pu_nano_d', rarity: 'rare', effect: (p) => p.stats.regen += 2 },
+    { id: 'plasma_amplifier', nameKey: 'pu_plasma_n', descKey: 'pu_plasma_d', rarity: 'rare', effect: (p) => p.stats.projSize += 0.25 },
+    { id: 'multi_launcher', nameKey: 'pu_multi_n', descKey: 'pu_multi_d', rarity: 'epic', effect: (p) => p.stats.projCount += 1 },
+    { id: 'gravity_field', nameKey: 'pu_grav_n', descKey: 'pu_grav_d', rarity: 'epic', effect: (p) => p.stats.magnet += 0.50 },
+    { id: 'tachyon_processor', nameKey: 'pu_tachyon_n', descKey: 'pu_tachyon_d', rarity: 'epic', effect: (p) => p.stats.cooldownRed += 0.15 },
+    { id: 'stellar_forge', nameKey: 'pu_forge_n', descKey: 'pu_forge_d', rarity: 'legendary', effect: (p) => { p.stats.damageMult += 0.30; p.stats.critDmg += 0.50; } },
+    { id: 'omega_protocol', nameKey: 'pu_omega_n', descKey: 'pu_omega_d', rarity: 'legendary', effect: (p) => { p.stats.projCount += 2; p.stats.cooldownRed += 0.25; } }
 ];
 
 export const AUDIO = {
+    introneon: new Audio('audio/introneon.mp3'),
     bgm: new Audio('audio/bgm_loop.mp3'),
     hit: new Audio('audio/hit.mp3'),
     explosion: new Audio('audio/explosion.mp3'),
@@ -62,7 +64,9 @@ export const AUDIO = {
     bossbgm: new Audio('audio/boss.mp3')
 };
 
+AUDIO.introneon.loop = true;
 AUDIO.bgm.loop = true;
 AUDIO.bossbgm.loop = true;
+AUDIO.introneon.volume = 0.5;
 AUDIO.bgm.volume = 0.5;
 AUDIO.bossbgm.volume = 0.6;
