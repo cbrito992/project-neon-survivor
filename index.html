@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Survivor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="startMenu" class="neon-panel">
+        <h1 class="neon-text-blue">NEON SURVIVOR</h1>
+
+        <input type="text" id="playerName" class="neon-input" placeholder="ENTER CALL SIGN" maxlength="12">
+
+        <p>Choose your Faction:</p>
+        <div class="buttons">
+            <button class="neon-btn triangle faction-btn" data-shape="triangle">Triangle<br><small>Offense</small></button>
+            <button class="neon-btn circle faction-btn" data-shape="circle">Circle<br><small>Mobility</small></button>
+            <button class="neon-btn square faction-btn" data-shape="square">Square<br><small>Defense</small></button>
+        </div>
+
+        <button id="playBtn" class="neon-btn play-btn" disabled>INITIALIZE</button>
+
+        <div class="audio-controls">
+            <label>BGM Volume: <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="0.5"></label>
+            <label>SFX Volume: <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="0.5"></label>
+        </div>
+    </div>
+
+    <div id="factionTooltip" class="tooltip" style="display: none;"></div>
+
+    <div id="warningMessage" style="display: none;">
+        <h1 class="flash-text">WARNING: MASSIVE ANOMALY DETECTED</h1>
+    </div>
+
+    <div id="levelUpMenu" class="neon-panel" style="display: none; width: 450px;">
+        <h1 class="neon-text-pink" style="margin-bottom: 5px;">SYSTEM UPGRADE</h1>
+        <p style="margin-top: 0; color: #aaa; font-size: 14px;">Select a new protocol:</p>
+        <div id="upgradeChoices" class="upgrade-container"></div>
+    </div>
+
+    <div id="topRightControls" style="display: none;">
+        <button id="pauseBtn" class="neon-btn small-btn" style="pointer-events: none;">[SPACE] PAUSE &nbsp;|&nbsp; [ESC] QUIT</button>
+    </div>
+
+    <div id="bossHpContainer" style="display: none;">
+        <div class="neon-text-pink" style="font-size: 14px; letter-spacing: 2px;">ANOMALY INTEGRITY</div>
+        <div class="bar-container boss-bar"><div id="bossHpBar" class="bar-fill hp-fill" style="width: 100%; background: #ff0055; box-shadow: 0 0 10px #ff0055;"></div></div>
+    </div>
+
+    <div id="hud" style="display: none;">
+        <div class="hud-block">
+            <h2 class="neon-text-blue" id="displayNick">Pilot</h2>
+            <div class="bar-container"><div id="xpBar" class="bar-fill xp-fill" style="width: 0%;"></div></div>
+        </div>
+
+        <div class="hud-block score-block">
+            <h3 class="neon-text-pink" style="margin-bottom: 2px;">TIME: <span id="gameTimer">00:00</span></h3>
+            <h3 class="neon-text-pink" style="margin-top: 2px; font-size: 16px;">SCORE: <span id="score">0</span></h3>
+        </div>
+
+        <div class="hud-block">
+            <div style="display: flex; gap: 10px; font-size: 12px; justify-content: center; font-weight: bold;">
+                <span style="color: #0ff;">SHIELD</span>
+                <span style="color: #0f0;">ENERGY</span>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <div class="bar-container" style="width: 120px;"><div id="shieldBar" class="bar-fill shield-fill" style="width: 100%;"></div></div>
+                <div class="bar-container" style="width: 120px;"><div id="hpBar" class="bar-fill hp-fill" style="width: 100%;"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverMenu" class="neon-panel" style="display: none;">
+        <h1 class="neon-text-pink">SIGNAL LOST</h1>
+        <h2 class="neon-text-blue">Final Score: <span id="finalScore">0</span></h2>
+        <h3 class="neon-text-blue" style="margin-top:0;">Time Alive: <span id="finalTime">00:00</span></h3>
+        <button id="retryBtn" class="neon-btn play-btn">REBOOT SYSTEM</button>
+        <button id="quitBtn" class="neon-btn small-btn" style="margin-top: 10px; border-color: #555;">MAIN MENU</button>
+    </div>
+
+    <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+    <script type="module" src="js/game.js"></script>
+</body>
+</html>
