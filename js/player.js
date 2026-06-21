@@ -1,4 +1,4 @@
-import { isPressed } from './input.js';
+import { isPressed, joystick } from './input.js';
 import { drawNeonShape } from './shapes.js';
 import { FACTIONS } from './config.js';
 
@@ -18,7 +18,7 @@ export class Player {
         this.friction = 0.85;
 
         this.level = 1;
-        this.colorPhase = 0; // Evolução da cor após os bosses
+        this.colorPhase = 0;
 
         this.stats = {
             damageMult: 1.0,
@@ -54,20 +54,16 @@ export class Player {
         this.momentum = 0;
     }
 
-    // Retorna a cor atual baseada nas fases do Boss vencidas
     getCurrentColor() {
         if (this.colorPhase === 0) return this.baseColor;
         if (this.colorPhase === 1) {
-            // Pulsa entre a cor base e branco
             const mix = (Math.sin(Date.now() / 200) + 1) / 2;
             return mix > 0.5 ? this.baseColor : '#ffffff';
         }
         if (this.colorPhase === 2) {
-            // Pulsa cores quentes/frias intensas
             const mix = (Math.sin(Date.now() / 150) + 1) / 2;
             return mix > 0.5 ? this.baseColor : '#ff00ff';
         }
-        // Phase 3+ Arco-íris RGB contínuo (Level MAX Color)
         return `hsl(${(Date.now() / 10) % 360}, 100%, 50%)`;
     }
 
@@ -95,6 +91,12 @@ export class Player {
         if (isPressed('s') || isPressed('arrowdown')) { dy += this.accel; isMoving = true; }
         if (isPressed('a') || isPressed('arrowleft')) { ax -= this.accel; isMoving = true; }
         if (isPressed('d') || isPressed('arrowright')) { ax += this.accel; isMoving = true; }
+
+        if (joystick.active) {
+            ax += joystick.x * this.accel;
+            dy += joystick.y * this.accel;
+            isMoving = true;
+        }
 
         if (this.shape === 'circle') {
             if (isMoving) this.momentum = Math.min(this.momentum + 0.005, 0.4);
@@ -144,7 +146,6 @@ export class Player {
     draw(ctx) {
         let activeColor = this.getCurrentColor();
 
-        // Rastro Dinâmico
         this.trail.forEach((t, index) => {
             let alpha = 1 - (index / this.trail.length);
             ctx.save();
@@ -161,7 +162,6 @@ export class Player {
             ctx.restore();
         });
 
-        // Escudo Atual
         if (this.shield > 0) {
             ctx.save();
             ctx.translate(this.x, this.y);
@@ -172,7 +172,6 @@ export class Player {
             ctx.restore();
         }
 
-        // Corpo Principal
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);

@@ -1,14 +1,7 @@
+// ==========================================
+// MOTOR DE RENDERIZAÇÃO OTIMIZADO (FALSO NEON)
+// ==========================================
 export function drawNeonShape(ctx, x, y, size, shape, color, isOutlineOnly = false) {
-    if (!isOutlineOnly) {
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = color;
-    } else {
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = color;
-    }
-
-    ctx.strokeStyle = color;
-    ctx.lineWidth = isOutlineOnly ? 3 : 4;
     ctx.beginPath();
 
     if (shape === 'square') {
@@ -31,6 +24,25 @@ export function drawNeonShape(ctx, x, y, size, shape, color, isOutlineOnly = fal
         ctx.closePath();
     }
 
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+    // OTIMIZAÇÃO: Substituição do 'shadowBlur' (muito pesado) por linhas sobrepostas.
+    // Isso garante 60FPS em computadores fracos e celulares.
+    if (!isOutlineOnly) {
+        // Brilho Externo (Glow)
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.4;
+        ctx.lineWidth = size * 0.25; // Espessura dinâmica
+        ctx.stroke();
+
+        // Núcleo Sólido
+        ctx.strokeStyle = '#ffffff';
+        ctx.globalAlpha = 1.0;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    } else {
+        // Apenas a linha (Usado para o Escudo)
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 1.0;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
 }
