@@ -258,6 +258,7 @@ let pauseStartTime = 0;
 let elapsedSeconds = 0;
 
 let frameCount = 0;
+let lastFrameTime = 0;
 
 function playSound(audioElement) {
     if(!audioElement) return;
@@ -339,7 +340,7 @@ let lastAttackTime = 0;
 document.querySelectorAll('.faction-btn').forEach(button => {
     button.addEventListener('mouseenter', (e) => {
         if(!factionTooltip) return;
-        const shape = e.target.getAttribute('data-shape');
+        const shape = e.currentTarget.getAttribute('data-shape');
         factionTooltip.innerText = t(`fac_${shape.substring(0,3)}_desc`);
         factionTooltip.style.display = 'block';
         const rect = e.target.getBoundingClientRect();
@@ -353,8 +354,8 @@ document.querySelectorAll('.faction-btn').forEach(button => {
     button.addEventListener('click', (e) => {
         playSound(AUDIO.clickhud);
         document.querySelectorAll('.faction-btn').forEach(b => b.classList.remove('selected'));
-        e.target.classList.add('selected');
-        selectedShape = e.target.getAttribute('data-shape');
+        e.currentTarget.classList.add('selected');
+        selectedShape = e.currentTarget.getAttribute('data-shape');
         if(playBtn) playBtn.disabled = false;
     });
 });
@@ -513,6 +514,7 @@ function startGame(shape) {
     activeEffects = { saw: 0, machinegun: 0 };
     score = 0;
     frameCount = 0;
+    lastFrameTime = performance.now();
 
     bossPhase = false;
     hasWarnedBoss = false;
@@ -725,7 +727,7 @@ function shootNearestEnemy() {
     }
 }
 
-function update() {
+function update(deltaFrames = 1) {
     if (!gameActive || isPaused) return;
 
     frameCount++;
@@ -746,26 +748,26 @@ function update() {
 
     if (score >= currentBossScoreTarget && !bossPhase) spawnBoss();
 
-    player.update();
-    if (shakeTime > 0) shakeTime--;
+    player.update(deltaFrames);
+    if (shakeTime > 0) shakeTime -= deltaFrames;
 
     if (player.stats.regen > 0 && player.shield < player.shieldMax) {
-        player.shield += (player.stats.regen / 60);
+        player.shield = Math.min(player.shieldMax, player.shield + (player.stats.regen / 60) * deltaFrames);
     }
 
     updateHUD();
 
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
         let ft = floatingTexts[i];
-        ft.y -= 1.5;
-        ft.life -= 0.02;
+        ft.y -= 1.5 * deltaFrames;
+        ft.life -= 0.02 * deltaFrames;
         if (ft.life <= 0) floatingTexts.splice(i, 1);
     }
 
     const now = Date.now();
     let currentCooldown = 800 * (1 - player.stats.cooldownRed);
     if (activeEffects.machinegun > 0) {
-        activeEffects.machinegun--;
+        activeEffects.machinegun -= deltaFrames;
         currentCooldown *= 0.2;
     }
 
@@ -799,12 +801,12 @@ function update() {
     }
 
     if (activeEffects.saw > 0) {
-        activeEffects.saw--;
+        activeEffects.saw -= deltaFrames;
         let sawAngle = now / 100;
         let sawX = player.x + Math.cos(sawAngle) * 90;
         let sawY = player.y + Math.sin(sawAngle) * 90;
         enemies.forEach(e => {
-            if (Math.hypot(sawX - e.x, sawY - e.y) < e.size/2 + 25) e.hp -= 1.5;
+            if (Math.hypot(sawX - e.x, sawY - e.y) < e.size/2 + 25) e.hp -= 1.5 * deltaFrames;
         });
     }
 
@@ -858,7 +860,7 @@ function update() {
 
     for (let i = projectiles.length - 1; i >= 0; i--) {
         const proj = projectiles[i];
-        proj.update();
+        proj.update(deltaFrames);
         if (!proj.active) { projectiles.splice(i, 1); continue; }
 
         if (proj.isEnemy) {
@@ -898,7 +900,7 @@ function update() {
 
     for (let i = enemies.length - 1; i >= 0; i--) {
         const enemy = enemies[i];
-        const distance = enemy.update(player.x, player.y);
+        const distance = enemy.update(player.x, player.y, deltaFrames);
 
         let bossAttackCooldown = Math.max(500, 1500 - (bossLevel * 150));
 
@@ -1138,8 +1140,11 @@ function drawGrid(camX, camY) {
     ctx.stroke();
 }
 
-function gameLoop() {
-    update();
+function gameLoop(timestamp = performance.now()) {
+    const deltaMs = Math.min(50, Math.max(0, timestamp - lastFrameTime));
+    const deltaFrames = deltaMs / (1000 / 60) || 1;
+    lastFrameTime = timestamp;
+    update(deltaFrames);
     draw();
     if (gameActive || isPaused) {
         animationFrameId = requestAnimationFrame(gameLoop);
