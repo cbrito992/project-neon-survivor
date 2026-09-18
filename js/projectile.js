@@ -1,4 +1,5 @@
 import { drawNeonShape } from './shapes.js';
+import { drawSprite, SPRITES } from './assets.js';
 
 export class Projectile {
     // Adicionado parâmetro 'isCrit' no final
@@ -18,6 +19,7 @@ export class Projectile {
         this.active = true;
         this.life = 150;
         this.isEnemy = isEnemy;
+        this.sprite = isEnemy ? SPRITES.bossShots[shape] : null;
 
         const dx = targetX - startX;
         const dy = targetY - startY;
@@ -37,6 +39,15 @@ export class Projectile {
     }
 
     draw(ctx) {
+        if (this.sprite) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            const rotation = Math.atan2(this.vy, this.vx) + Math.PI / 2;
+            const drawn = drawSprite(ctx, this.sprite, this.size * 2.4, rotation);
+            ctx.restore();
+            if (drawn) return;
+        }
+
         // Se for crítico, a borda do tiro fica branca para dar impacto
         const strokeColor = this.isCrit ? '#fff' : this.color;
         drawNeonShape(ctx, this.x, this.y, this.size, this.shape, strokeColor);
