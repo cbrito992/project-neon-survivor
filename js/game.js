@@ -4,6 +4,7 @@ import { Enemy } from './enemy.js';
 import { ParticleSystem } from './particles.js';
 import { Projectile } from './projectile.js';
 import { XPGem, Orb } from './xp.js';
+import { GridWorld } from './grid-world.js';
 
 // ==========================================
 // SISTEMA DE LOCALIZAÇÃO (i18n)
@@ -11,12 +12,12 @@ import { XPGem, Orb } from './xp.js';
 const i18n = {
     en: {
         menu_placeholder: "ENTER CALL SIGN",
-        menu_select_protocol: "SELECT PROTOCOL:",
+        menu_select_protocol: "CHOOSE YOUR SIGIL:",
         fac_tri_btn: "Triangle<br><small>Offense</small>",
         fac_cir_btn: "Circle<br><small>Mobility</small>",
         fac_squ_btn: "Square<br><small>Defense</small>",
-        menu_play: "ENTER THE GRID",
-        menu_lore: "DATA ARCHIVES",
+        menu_play: "BEGIN THE RITE",
+        menu_lore: "CHRONICLES",
         menu_support: "SUPPORT THE GRID",
         supp_title: "SUPPORT THE GRID",
         supp_thanks: "Thank you for playing Neon Survivor! Your survival helps keep the Grid alive.",
@@ -41,14 +42,14 @@ const i18n = {
         lore_p5_text: "Survive. Evolve. Discover the origin of the corruption.",
         lore_quote: '"The war between shapes has begun. The true threat has yet to awaken."',
         lore_return: "RETURN",
-        boss_warning: "WARNING: MASSIVE ANOMALY DETECTED",
-        lvl_title: "SYSTEM UPGRADE",
-        lvl_subtitle: "SELECT A NEW PROTOCOL:",
-        boss_hp: "ANOMALY INTEGRITY",
+        boss_warning: "AN ANCIENT HORROR AWAKENS",
+        lvl_title: "RELIC AWAKENING",
+        lvl_subtitle: "CHOOSE A BLESSING:",
+        boss_hp: "ANCIENT WILL",
         hud_time: "TIME:",
         hud_score: "SCORE:",
-        hud_shield: "SHIELD",
-        hud_energy: "ENERGY",
+        hud_shield: "WARD",
+        hud_energy: "VITALITY",
         pause_btn: "[SPACE] PAUSE",
         quit_btn: "[ESC] QUIT",
         go_title: "SIGNAL LOST",
@@ -70,12 +71,12 @@ const i18n = {
     },
     pt: {
         menu_placeholder: "INSERIR CÓDIGO",
-        menu_select_protocol: "SELECIONE O PROTOCOLO:",
+        menu_select_protocol: "ESCOLHA SEU SIGILO:",
         fac_tri_btn: "Triângulo<br><small>Ataque</small>",
         fac_cir_btn: "Círculo<br><small>Mobilidade</small>",
         fac_squ_btn: "Quadrado<br><small>Defesa</small>",
-        menu_play: "ENTRAR NA GRADE",
-        menu_lore: "ARQUIVOS [LORE]",
+        menu_play: "INICIAR O RITO",
+        menu_lore: "CRÔNICAS",
         menu_support: "APOIAR A GRADE",
         supp_title: "APOIE A GRADE",
         supp_thanks: "Obrigado por jogar Neon Survivor! Sua sobrevivência ajuda a manter a Grade viva.",
@@ -100,14 +101,14 @@ const i18n = {
         lore_p5_text: "Sobreviva. Evolua. Descubra a origem da corrupção.",
         lore_quote: '"A guerra entre as formas começou. A verdadeira ameaça ainda não despertou."',
         lore_return: "VOLTAR",
-        boss_warning: "AVISO: ANOMALIA MASSIVA DETECTADA",
-        lvl_title: "ATUALIZAÇÃO DE SISTEMA",
-        lvl_subtitle: "SELECIONE UM NOVO PROTOCOLO:",
-        boss_hp: "INTEGRIDADE DA ANOMALIA",
+        boss_warning: "UM HORROR ANCESTRAL DESPERTA",
+        lvl_title: "DESPERTAR DA RELÍQUIA",
+        lvl_subtitle: "ESCOLHA UMA BÊNÇÃO:",
+        boss_hp: "VONTADE ANCESTRAL",
         hud_time: "TEMPO:",
         hud_score: "PONTOS:",
-        hud_shield: "ESCUDO",
-        hud_energy: "ENERGIA",
+        hud_shield: "BARREIRA",
+        hud_energy: "VITALIDADE",
         pause_btn: "[ESPAÇO] PAUSA",
         quit_btn: "[ESC] SAIR",
         go_title: "SINAL PERDIDO",
@@ -260,6 +261,10 @@ let elapsedSeconds = 0;
 
 let frameCount = 0;
 let lastFrameTime = 0;
+let gridWorld;
+let nextDirectorSpawn = 0;
+let nextBossAt = 240;
+const BOSS_INTERVAL = 240;
 
 function playSound(audioElement) {
     if(!audioElement) return;
@@ -516,6 +521,9 @@ function startGame(shape) {
     score = 0;
     frameCount = 0;
     lastFrameTime = performance.now();
+    nextDirectorSpawn = 2;
+    nextBossAt = BOSS_INTERVAL;
+    gridWorld = new GridWorld();
 
     bossPhase = false;
     hasWarnedBoss = false;
@@ -568,11 +576,11 @@ function spawnBoss() {
 
     const currBossShape = bossShapeList[(bossLevel - 1) % bossShapeList.length];
 
-    for (let i = 0; i < bossLevel; i++) {
+    for (let i = 0; i < 1; i++) {
         let boss = new Enemy(player.x, player.y, currBossShape, 'tank');
         boss.isBoss = true;
         boss.size = 120 + (bossLevel * 20);
-        boss.hp = 6000 * Math.pow(1.6, bossLevel - 1);
+        boss.hp = 4200 * Math.pow(1.45, bossLevel - 1);
         boss.maxHp = boss.hp;
         boss.speed = 1.5 + (bossLevel * 0.15);
         boss.color = '#ff0055';
@@ -587,32 +595,26 @@ function spawnBoss() {
     if(bossHpContainer) bossHpContainer.style.display = 'block';
 }
 
-setInterval(() => {
-    if (!gameActive || isPaused) return;
+function runThreatDirector() {
+    if (elapsedSeconds < nextDirectorSpawn) return;
+    const minute = Math.floor(elapsedSeconds / 60);
+    const cap = bossPhase ? 15 : Math.min(45, 18 + minute * 4);
+    nextDirectorSpawn = elapsedSeconds + (bossPhase ? 4.5 : Math.max(4.5, 8 - minute * 0.45));
+    if (enemies.length >= cap) return;
 
-    if (bossPhase) {
-        if (Math.random() < 0.15) enemies.push(new Enemy(player.x, player.y, enemyShape, 'fast'));
-        return;
+    let budget = bossPhase ? 3 : 6 + Math.floor(elapsedSeconds / 45) * 2;
+    const roster = minute < 1
+        ? [{ type: 'normal', cost: 2 }, { type: 'fast', cost: 1 }]
+        : [{ type: 'normal', cost: 2 }, { type: 'fast', cost: 1 }, { type: 'ranged', cost: 3 }, { type: 'tank', cost: 5 }, { type: 'elite', cost: 8 }];
+
+    while (budget > 0 && enemies.length < cap) {
+        const available = roster.filter(entry => entry.cost <= budget);
+        if (!available.length) break;
+        const choice = available[Math.floor(Math.random() * available.length)];
+        enemies.push(new Enemy(player.x, player.y, enemyShape, choice.type));
+        budget -= choice.cost;
     }
-
-    let spawnsPerTick = 1 + Math.floor(elapsedSeconds / 30);
-
-    for (let s = 0; s < spawnsPerTick; s++) {
-        let type = 'normal';
-        let roll = Math.random();
-
-        if (score >= 15 && score < 50) {
-            if (roll < 0.3) type = 'fast';
-        } else if (score >= 50) {
-            if (roll < 0.15) type = 'tank';
-            else if (roll < 0.45) type = 'fast';
-        }
-
-        if (enemies.length < 80) {
-            enemies.push(new Enemy(player.x, player.y, enemyShape, type));
-        }
-    }
-}, CONFIG.spawnRateMs);
+}
 
 function triggerShake() {
     shakeTime = 15;
@@ -736,7 +738,7 @@ function update(deltaFrames = 1) {
     let elapsedMs = Date.now() - gameStartTime - totalPausedTime;
     elapsedSeconds = elapsedMs / 1000;
 
-    if (score >= currentBossScoreTarget - 10 && !hasWarnedBoss && !bossPhase) {
+    if (elapsedSeconds >= nextBossAt - 10 && !hasWarnedBoss && !bossPhase) {
         if(warningMessage) warningMessage.style.display = 'block';
         warningTimer = 180;
         hasWarnedBoss = true;
@@ -747,13 +749,23 @@ function update(deltaFrames = 1) {
         if (warningTimer <= 0 && warningMessage) warningMessage.style.display = 'none';
     }
 
-    if (score >= currentBossScoreTarget && !bossPhase) spawnBoss();
+    if (elapsedSeconds >= nextBossAt && !bossPhase) spawnBoss();
+    runThreatDirector();
 
     player.update(deltaFrames);
     if (shakeTime > 0) shakeTime -= deltaFrames;
 
     if (player.stats.regen > 0 && player.shield < player.shieldMax) {
         player.shield = Math.min(player.shieldMax, player.shield + (player.stats.regen / 60) * deltaFrames);
+    }
+
+    const gridResult = gridWorld?.update(player, enemies, deltaFrames);
+    if (gridResult?.xp) {
+        currentXP += gridResult.xp;
+        if (currentXP >= xpToNextLevel) triggerLevelUp();
+    }
+    if (gridResult?.message) {
+        floatingTexts.push({ x: player.x, y: player.y - 45, text: gridResult.message, life: 2, color: gridResult.color });
     }
 
     updateHUD();
@@ -933,6 +945,11 @@ function update(deltaFrames = 1) {
             enemy.lastAttackTime = now;
         }
 
+        if (!enemy.isBoss && enemy.type === 'ranged' && now - enemy.lastAttackTime > 2200) {
+            projectiles.push(new Projectile(enemy.x, enemy.y, player.x, player.y, '#b36cff', 8, true, enemy.shape));
+            enemy.lastAttackTime = now + Math.random() * 400;
+        }
+
         if (distance < player.shieldRadius && player.shield > 0) {
             player.takeDamage(enemy.isBoss ? 2 : 0.5);
             if (!enemy.isBoss) enemy.hp -= 0.5;
@@ -1002,6 +1019,7 @@ function update(deltaFrames = 1) {
         try { if(AUDIO.bgm) AUDIO.bgm.play(); } catch(e) {}
 
         currentBossScoreTarget += 300 + (bossLevel * 100);
+        nextBossAt += BOSS_INTERVAL;
         bossLevel++;
         player.evolveColor();
     }
@@ -1055,8 +1073,7 @@ function drawMinimap() {
 function draw() {
     if(!ctx) return;
 
-    ctx.fillStyle = bossPhase ? '#120005' : '#050514';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    gridWorld?.drawSky(ctx, player, canvas, bossPhase);
 
     ctx.save();
     if (shakeTime > 0) ctx.translate((Math.random() - 0.5) * shakeTime, (Math.random() - 0.5) * shakeTime);
@@ -1066,6 +1083,7 @@ function draw() {
     ctx.translate(camX, camY);
 
     drawGrid(camX, camY);
+    gridWorld?.draw(ctx);
 
     ctx.strokeStyle = bossPhase ? 'rgba(255, 50, 50, 0.2)' : 'rgba(0, 255, 255, 0.1)';
     ctx.lineWidth = 2;
