@@ -77,7 +77,13 @@ export class Enemy {
         ctx.rotate(this.rotation);
 
         if (this.type === 'tank') ctx.lineWidth = 6;
-        if (!drawSprite(ctx, this.sprite, this.size * (this.isBoss ? 1.15 : 1))) {
+
+        if (this.isBoss) {
+            drawSprite(ctx, SPRITES.effects.bossAura, this.size * 1.55, -this.rotation);
+        }
+
+        const activeSprite = this.isBoss ? SPRITES.bosses[this.shape] : this.sprite;
+        if (!drawSprite(ctx, activeSprite, this.size * (this.isBoss ? 1.15 : 1))) {
             drawNeonShape(ctx, 0, 0, this.size, this.shape, this.color);
         }
 
