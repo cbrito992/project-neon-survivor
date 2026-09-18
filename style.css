@@ -150,3 +150,31 @@ input[type=range] { width: 100px; accent-color: #0ff; }
     .bar-container { width: 100%; }
     .menu-footer { font-size: 8px; bottom: 10px; }
 }
+
+/* Tema visual: fantasia cósmica */
+:root { --arcane-gold:#d8b45a; --arcane-gold-soft:#f1d98e; --arcane-violet:#8d6bd6; }
+body { font-family: Georgia, 'Times New Roman', serif; background:#07050d; }
+.fullscreen-menu { background-image:radial-gradient(circle at 50% 28%,rgba(119,78,170,.26),transparent 38%),linear-gradient(to bottom,rgba(8,5,15,.28),rgba(7,4,12,.94)),url('image/backgroundmenu.png'); }
+.glass-panel { background:linear-gradient(145deg,rgba(32,20,43,.95),rgba(10,7,16,.96)); border:1px solid rgba(216,180,90,.72); border-radius:4px; box-shadow:0 18px 45px #000,inset 0 0 30px rgba(141,107,214,.12),0 0 0 3px rgba(52,34,69,.8); clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px); }
+.glass-subpanel { background:rgba(12,8,18,.82); border:1px solid rgba(216,180,90,.42); border-radius:3px; }
+.epic-title { color:var(--arcane-gold-soft); font-family:Georgia,'Times New Roman',serif; font-variant:small-caps; text-shadow:0 2px 0 #4b2e19,0 0 18px rgba(216,180,90,.75),0 0 45px rgba(115,71,157,.65); }
+.subtitle { color:#c4a5ff; text-shadow:0 0 15px #6e3ca0; }
+.neon-btn { background:linear-gradient(#2b1c35,#130d1c); color:#eadfbf; border:1px solid #8c7040; border-radius:3px; font-family:Georgia,'Times New Roman',serif; letter-spacing:1px; box-shadow:inset 0 0 0 2px rgba(0,0,0,.35); }
+.pill-btn,.epic-play { border-radius:3px; }
+.neon-btn:hover { background:linear-gradient(#49315c,#21152d); color:#fff1bd; border-color:var(--arcane-gold); }
+.neon-btn.selected { background:linear-gradient(#5c3e72,#25172f); border-color:var(--arcane-gold-soft); box-shadow:0 0 18px rgba(216,180,90,.48),inset 0 0 18px rgba(141,107,214,.35); }
+.neon-btn.triangle,.neon-btn.circle,.neon-btn.square { color:#e8d9aa; border-color:#8c7040; }
+.epic-play { color:var(--arcane-gold-soft); border:2px solid var(--arcane-gold); }
+.epic-input,.neon-select { background:rgba(8,5,13,.86); color:#f1e5c3; border-color:rgba(216,180,90,.68); border-radius:3px; font-family:Georgia,'Times New Roman',serif; }
+.glass-hud { background:linear-gradient(to bottom,rgba(10,6,16,.97),rgba(21,12,29,.72),transparent); border-bottom:1px solid rgba(216,180,90,.42); }
+.neon-text-blue { color:#d9c9ff; text-shadow:0 0 9px #7255a4; }
+.neon-text-pink { color:#f0cf79; text-shadow:0 0 9px #8e6521; }
+.xp-fill { background:#b68a34; box-shadow:0 0 10px #d8b45a; }
+.shield-fill { background:#8268c4; box-shadow:0 0 10px #a68be8; }
+.hp-fill { background:#8da85c; box-shadow:0 0 10px #a9c979; }
+.bar-container { border-color:#6e5834; border-radius:2px; }
+.bar-fill { border-radius:0; }
+.upgrade-btn { border-left-color:var(--arcane-gold); }
+.rarity-rare { border-left-color:#749ad1; }
+.rarity-epic { border-left-color:#9f70dd; }
+.rarity-legendary { border-left-color:#efc55d; }
