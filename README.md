@@ -4,7 +4,7 @@ Roguelite de sobrevivência feito com Canvas e JavaScript, inspirado no ritmo de
 
 ## Executar localmente
 
-Como o projeto usa módulos JavaScript, abra-o por um servidor local (não diretamente por `file://`):
+Como o projeto usa módulos JavaScript, abra-o por um servidor local:
 
 ```bash
 python -m http.server 8080
@@ -12,20 +12,21 @@ python -m http.server 8080
 
 Depois acesse `http://localhost:8080`.
 
-## Como adicionar assets de personagens
+## Assets pixel art
 
-Crie `image/characters/` e adicione PNGs quadrados com fundo transparente:
+Os sprites ficam em `assets/` e são ligados ao jogo pelo manifesto `js/assets.js`.
 
-- `player-triangle.png`, `player-circle.png`, `player-square.png`
-- `enemy-triangle.png`, `enemy-circle.png`, `enemy-square.png`, `enemy-hexagon.png`
+- Players: `triangle_player.png`, `circle_player.png`, `square_player.png`.
+- Inimigos: `triangle_enemy.png`, `circle_enemy.png`, `square_enemy.png`.
+- Bosses: `triangle_boss.png`, `circle_boss.png`, `square_boss.png`, `hexagon_boss.png`.
+- Projéteis: arquivos `boss_shot_*.png`.
+- Efeitos: aura, explosões e aviso de boss.
 
-Tamanho recomendado: 256×256 px, personagem centralizado e com margem transparente de aproximadamente 10%. O jogo carrega esses nomes automaticamente. Se um arquivo não existir, a forma neon original continua sendo desenhada como fallback.
-
-Para trocar nomes ou caminhos, edite o manifesto `js/assets.js`.
+O Canvas usa `imageSmoothingEnabled = false` para preservar os pixels. Se algum asset falhar, as formas neon continuam funcionando como fallback.
 
 ## Caminho para Steam e ranking
 
 - Empacotamento desktop: Electron ou Tauri; Tauri tende a gerar builds menores.
-- Integração Steam: Steamworks SDK por uma camada compatível com o empacotador escolhido.
-- Ranking global: prefira Steam Leaderboards na versão Steam. Para ranking também disponível na web, use um backend próprio (por exemplo, Supabase/PostgreSQL) com validação de partidas no servidor.
-- Nunca aceite apenas uma pontuação enviada pelo navegador: isso torna o ranking trivial de adulterar.
+- Integração Steam: Steamworks SDK por uma camada compatível.
+- Ranking global: Steam Leaderboards na Steam ou backend próprio para compartilhar ranking com a web.
+- A pontuação deve ser validada para dificultar adulterações enviadas pelo navegador.
