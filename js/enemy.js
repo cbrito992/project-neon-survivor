@@ -1,5 +1,6 @@
 import { drawNeonShape } from './shapes.js';
 import { COLORS } from './config.js';
+import { drawSprite, SPRITES } from './assets.js';
 
 export class Enemy {
     constructor(playerX, playerY, shape, type = 'normal') {
@@ -8,6 +9,7 @@ export class Enemy {
         this.baseColor = this.color;
         this.type = type;
         this.isBoss = false;
+        this.sprite = SPRITES.enemies[shape];
 
         // Efeitos de Swarm / Física Temporária
         this.rotation = 0;
@@ -41,24 +43,24 @@ export class Enemy {
         this.y = playerY + Math.sin(angle) * spawnRadius;
     }
 
-    update(playerX, playerY) {
+    update(playerX, playerY, deltaFrames = 1) {
         const dx = playerX - this.x;
         const dy = playerY - this.y;
         const distance = Math.hypot(dx, dy);
 
         if (distance > 0) {
-            this.x += (dx / distance) * this.speed;
-            this.y += (dy / distance) * this.speed;
+            this.x += (dx / distance) * this.speed * deltaFrames;
+            this.y += (dy / distance) * this.speed * deltaFrames;
         }
 
         // Rotação dinâmica
         if (this.rotSpeed > 0) {
-            this.rotation += this.rotSpeed;
+            this.rotation += this.rotSpeed * deltaFrames;
         }
 
         // Lógica de tempo para os efeitos físicos voltarem ao normal
         if (this.specialTimer > 0) {
-            this.specialTimer--;
+            this.specialTimer -= deltaFrames;
             if (this.specialTimer <= 0) {
                 this.color = this.baseColor;
                 this.speed = this.baseSpeed;
@@ -75,7 +77,9 @@ export class Enemy {
         ctx.rotate(this.rotation);
 
         if (this.type === 'tank') ctx.lineWidth = 6;
-        drawNeonShape(ctx, 0, 0, this.size, this.shape, this.color);
+        if (!drawSprite(ctx, this.sprite, this.size * (this.isBoss ? 1.15 : 1))) {
+            drawNeonShape(ctx, 0, 0, this.size, this.shape, this.color);
+        }
 
         ctx.restore();
     }
