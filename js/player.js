@@ -1,6 +1,7 @@
 import { isPressed, joystick } from './input.js';
 import { drawNeonShape } from './shapes.js';
 import { FACTIONS } from './config.js';
+import { drawSprite, SPRITES } from './assets.js';
 
 export class Player {
     constructor(shape) {
@@ -47,6 +48,7 @@ export class Player {
         this.shield = this.shieldMax;
 
         this.shieldScaleBase = 2.5;
+        this.sprite = SPRITES.players[shape];
         this.rotation = 0;
         this.scale = 1;
 
@@ -82,7 +84,11 @@ export class Player {
         this.shield = (this.shield / oldShieldMax) * this.shieldMax;
     }
 
-    update() {
+    get shieldRadius() {
+        return (this.size * this.shieldScaleBase) / 2;
+    }
+
+    update(deltaFrames = 1) {
         let ax = 0;
         let dy = 0;
         let isMoving = false;
@@ -99,25 +105,26 @@ export class Player {
         }
 
         if (this.shape === 'circle') {
-            if (isMoving) this.momentum = Math.min(this.momentum + 0.005, 0.4);
+            if (isMoving) this.momentum = Math.min(this.momentum + (0.005 * deltaFrames), 0.4);
             else this.momentum = 0;
         }
 
         let finalSpeedMult = this.stats.speedMult + this.momentum;
 
-        this.vx += ax * finalSpeedMult;
-        this.vy += dy * finalSpeedMult;
-        this.vx *= this.friction;
-        this.vy *= this.friction;
+        this.vx += ax * finalSpeedMult * deltaFrames;
+        this.vy += dy * finalSpeedMult * deltaFrames;
+        const frameFriction = Math.pow(this.friction, deltaFrames);
+        this.vx *= frameFriction;
+        this.vy *= frameFriction;
 
-        this.x += this.vx;
-        this.y += this.vy;
+        this.x += this.vx * deltaFrames;
+        this.y += this.vy * deltaFrames;
 
         if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
             this.rotation = Math.atan2(this.vy, this.vx) + Math.PI / 2;
         }
 
-        if (this.scale > 1) this.scale -= 0.05;
+        if (this.scale > 1) this.scale = Math.max(1, this.scale - (0.05 * deltaFrames));
 
         this.trail.unshift({
             x: this.x, y: this.y, rot: this.rotation,
@@ -176,7 +183,9 @@ export class Player {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
         ctx.scale(this.scale, this.scale);
-        drawNeonShape(ctx, 0, 0, this.size, this.shape, '#fff');
+        if (!drawSprite(ctx, this.sprite, this.size * 1.8)) {
+            drawNeonShape(ctx, 0, 0, this.size, this.shape, '#fff');
+        }
         ctx.restore();
     }
 }
