@@ -211,6 +211,7 @@ updateTranslations();
 // ==========================================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas?.getContext('2d');
+if (ctx) ctx.imageSmoothingEnabled = false;
 
 const menu = document.getElementById('startMenu');
 const loreMenu = document.getElementById('loreMenu');
