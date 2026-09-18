@@ -23,14 +23,16 @@ export class Projectile {
         const dy = targetY - startY;
         const distance = Math.hypot(dx, dy);
 
-        this.vx = (dx / distance) * this.speed;
-        this.vy = (dy / distance) * this.speed;
+        const safeDistance = distance || 1;
+
+        this.vx = (dx / safeDistance) * this.speed;
+        this.vy = (dy / safeDistance) * this.speed;
     }
 
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life--;
+    update(deltaFrames = 1) {
+        this.x += this.vx * deltaFrames;
+        this.y += this.vy * deltaFrames;
+        this.life -= deltaFrames;
         if (this.life <= 0) this.active = false;
     }
 
