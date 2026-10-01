@@ -60,14 +60,8 @@ export class Enemy {
         const distance = Math.hypot(dx, dy);
 
         if (distance > 0) {
-            let direction = 1;
-            if (this.type === 'ranged') {
-                if (distance < 220) direction = -0.65;
-                else if (distance < 330) direction = 0;
-            }
-            this.x += (dx / distance) * this.speed * direction * deltaFrames;
-            this.y += (dy / distance) * this.speed * direction * deltaFrames;
-            if (this.rotSpeed <= 0) this.rotation = Math.atan2(dy, dx) + Math.PI / 2;
+            this.x += (dx / distance) * this.speed * deltaFrames;
+            this.y += (dy / distance) * this.speed * deltaFrames;
         }
 
         // Rotação dinâmica
@@ -93,7 +87,7 @@ export class Enemy {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
 
-        if (this.type === 'tank' || this.type === 'elite') ctx.lineWidth = 6;
+        if (this.type === 'tank') ctx.lineWidth = 6;
 
         if (this.isBoss) {
             drawSprite(ctx, SPRITES.effects.bossAura, this.size * 1.55, -this.rotation);

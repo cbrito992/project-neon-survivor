@@ -261,10 +261,6 @@ let elapsedSeconds = 0;
 
 let frameCount = 0;
 let lastFrameTime = 0;
-let gridWorld;
-let nextDirectorSpawn = 0;
-let nextBossAt = 240;
-const BOSS_INTERVAL = 240;
 
 function playSound(audioElement) {
     if(!audioElement) return;
@@ -521,9 +517,6 @@ function startGame(shape) {
     score = 0;
     frameCount = 0;
     lastFrameTime = performance.now();
-    nextDirectorSpawn = 2;
-    nextBossAt = BOSS_INTERVAL;
-    gridWorld = new GridWorld();
 
     bossPhase = false;
     hasWarnedBoss = false;
@@ -757,15 +750,6 @@ function update(deltaFrames = 1) {
 
     if (player.stats.regen > 0 && player.shield < player.shieldMax) {
         player.shield = Math.min(player.shieldMax, player.shield + (player.stats.regen / 60) * deltaFrames);
-    }
-
-    const gridResult = gridWorld?.update(player, enemies, deltaFrames);
-    if (gridResult?.xp) {
-        currentXP += gridResult.xp;
-        if (currentXP >= xpToNextLevel) triggerLevelUp();
-    }
-    if (gridResult?.message) {
-        floatingTexts.push({ x: player.x, y: player.y - 45, text: gridResult.message, life: 2, color: gridResult.color });
     }
 
     updateHUD();
