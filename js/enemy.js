@@ -17,6 +17,7 @@ export class Enemy {
         this.specialTimer = 0; // Timer para voltar ao normal
         this.generation = 1; // Para bolhas
         this.willSplit = false;
+        this.lastAttackTime = 0;
 
         if (type === 'fast') {
             this.size = 15;
@@ -27,6 +28,16 @@ export class Enemy {
             this.size = 60;
             this.speed = 0.6 + Math.random() * 0.4;
             this.hp = 150;
+            this.baseSpeed = this.speed;
+        } else if (type === 'ranged') {
+            this.size = 25;
+            this.speed = 1.15;
+            this.hp = 42;
+            this.baseSpeed = this.speed;
+        } else if (type === 'elite') {
+            this.size = 46;
+            this.speed = 1.35;
+            this.hp = 260;
             this.baseSpeed = this.speed;
         } else {
             this.size = 28;

@@ -54,6 +54,7 @@ export class Player {
 
         this.trail = [];
         this.momentum = 0;
+        this.invulnerableUntil = 0;
     }
 
     getCurrentColor() {
@@ -134,6 +135,9 @@ export class Player {
     }
 
     takeDamage(baseDamage) {
+        const now = performance.now();
+        if (now < this.invulnerableUntil) return false;
+        this.invulnerableUntil = now + 280;
         let finalDamage = baseDamage;
         if (this.shape === 'square' && Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
             finalDamage *= 0.85;
@@ -148,6 +152,7 @@ export class Player {
             this.hp -= (finalDamage * 2);
             if (this.hp < 0) this.hp = 0;
         }
+        return true;
     }
 
     draw(ctx) {
